@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 import socket
+import gzip
 try:
 	from cStringIO import StringIO
 except ImportError, e:
 	from StringIO import StringIO
-from struct import unpack
+from struct import unpack, pack
 from __init__ import dumps, loads
 
 def _bintoint(data):
@@ -17,6 +18,7 @@ def _sendobj(self, obj):
 	"""
 	data = dumps(obj)
 	self.sendall(data)
+
 
 def _recvobj(self):
 	"""
@@ -36,6 +38,31 @@ def _recvobj(self):
 		return None
 
 	retval = loads(sock_buf.getvalue())
+	return retval
+
+
+def _gzip_sendobj(self, obj):
+	data = dumps(obj)
+	buf = StringIO()
+	fd = gzip.GzipFile(mode="wb", fileobj=buf)
+	fd.write(data)
+	fd.close()
+	zip_data = buf.getvalue()
+	self.sendall(struct.pack('i', len(zip_data)) + zip_data)
+
+
+def _gzip_recvobj(self, obj):
+	sock_buf = self.recvbytes(4)
+	if sock_buf is None:
+		return None
+	message_length = _bintoint(sock_buf.getvalue())
+	sock_buf = self.recvbytes(message_length)
+	if sock_buf is None:
+		return None
+
+	fd = gzip.GzipFile(mode="rb", fileobj=sock_buf)
+	data = fd.read()
+	retval = loads(data)
 	return retval
 
 
