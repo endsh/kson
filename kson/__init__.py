@@ -92,6 +92,8 @@ def patch_socket():
 	"""
 	from socket import socket
 	socket.recvbytes = network._recvbytes
-	socket.recvobj = network._recvobj
-	socket.sendobj = network._sendobj
+	# socket.recvobj = network._recvobj
+	# socket.sendobj = network._sendobj
+	socket.recvobj = network._gzip_recvobj
+	socket.sendobj = network._gzip_sendobj
 # }}}
