@@ -59,7 +59,8 @@ def _gzip_recvobj(self):
 	sock_buf = self.recvbytes(message_length)
 	if sock_buf is None:
 		return None
-
+	
+	sock_buf.seek(0)
 	fd = gzip.GzipFile(mode="rb", fileobj=sock_buf)
 	data = fd.read()
 	retval = loads(data)
