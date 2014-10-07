@@ -48,7 +48,7 @@ def _gzip_sendobj(self, obj):
 	fd.write(data)
 	fd.close()
 	zip_data = buf.getvalue()
-	self.sendall(struct.pack('i', len(zip_data)) + zip_data)
+	self.sendall(pack('i', len(zip_data)) + zip_data)
 
 
 def _gzip_recvobj(self, obj):
